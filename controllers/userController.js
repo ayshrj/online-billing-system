@@ -47,7 +47,6 @@ async function login(req, res) {
     }
 
     // User authentication successful
-    // You may implement JWT or session-based authentication here
     const token = jwt.sign({ userId: user._id }, JWT_SECRET_KEY, {
       expiresIn: "1h",
     });
