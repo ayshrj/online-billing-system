@@ -1,5 +1,6 @@
 const express = require("express");
 const bodyParser = require("body-parser");
+const database = require("./config/database");
 
 app.use(bodyParser.json()); //Middleware
 
