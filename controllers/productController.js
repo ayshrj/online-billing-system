@@ -1,7 +1,7 @@
 const Product = require("../models/product");
 
-const JWT_SECRET_KEY = "A9#2klz$aW1XnF%qS3p@tJYdfK&8cBz"; // Replace with your secret key
-// Fetch all products
+const JWT_SECRET_KEY = "A9#2klz$aW1XnF%qS3p@tJYdfK&8cBz";
+
 async function getAllProducts(req, res) {
   try {
     const products = await Product.find();
