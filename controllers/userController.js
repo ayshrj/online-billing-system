@@ -1,5 +1,8 @@
 const bcrypt = require("bcrypt");
+const jwt = require("jsonwebtoken");
 const User = require("../models/user");
+
+const JWT_SECRET_KEY = "A9#2klz$aW1XnF%qS3p@tJYdfK&8cBz"; // Replace with your secret key
 
 // User registration
 async function register(req, res) {
@@ -44,8 +47,12 @@ async function login(req, res) {
     }
 
     // User authentication successful
+    // You may implement JWT or session-based authentication here
+    const token = jwt.sign({ userId: user._id }, JWT_SECRET_KEY, {
+      expiresIn: "1h",
+    });
 
-    return res.status(200).json({ message: "Login successful" });
+    return res.status(200).json({ message: "Login successful", token });
   } catch (error) {
     console.error("Error during user login:", error);
     return res.status(500).json({ message: "Internal Server Error" });

@@ -1,12 +1,31 @@
+const jwt = require("jsonwebtoken");
 const Cart = require("../models/cart");
 const Product = require("../models/product");
 const taxCalculator = require("../utils/taxCalculator");
 
+const JWT_SECRET_KEY = "A9#2klz$aW1XnF%qS3p@tJYdfK&8cBz"; // Replace with your secret key
+
 // Add a product to the cart
 async function addToCart(req, res) {
-  const { userId, productId, quantity } = req.body;
-
+  // Check if the user is authenticated (valid token provided in the Authorization header)
   try {
+    const token = req.headers.authorization.split(" ")[1];
+
+    console.log("Received Token:", token);
+
+    if (!token) {
+      return res
+        .status(401)
+        .json({ message: "Authentication token not provided" });
+    }
+
+    const decodedToken = jwt.verify(token, JWT_SECRET_KEY);
+    const userId = decodedToken.userId;
+
+    console.log("Decoded Token:", decodedToken);
+
+    const { productId, quantity } = req.body;
+
     // Check if the product exists
     const product = await Product.findById(productId);
     if (!product) {
@@ -41,9 +60,21 @@ async function addToCart(req, res) {
 
 // Remove a product from the cart
 async function removeFromCart(req, res) {
-  const { userId, productId } = req.params;
+  // Check if the user is authenticated (valid token provided in the Authorization header)
+  const token = req.headers.authorization.split(" ")[1];
+  if (!token) {
+    return res
+      .status(401)
+      .json({ message: "Authentication token not provided" });
+  }
 
   try {
+    const { productId } = req.params;
+
+    // Verify the token and extract the user ID
+    const decodedToken = jwt.verify(token, JWT_SECRET_KEY);
+    const userId = decodedToken.userId;
+
     // Find the user's cart
     const cart = await Cart.findOne({ userId });
     if (!cart) {
@@ -75,9 +106,17 @@ async function removeFromCart(req, res) {
 
 // View total bill
 async function viewTotalBill(req, res) {
-  const { userId } = req.params;
+  const token = req.headers.authorization.split(" ")[1];
+  if (!token) {
+    return res
+      .status(401)
+      .json({ message: "Authentication token not provided" });
+  }
 
   try {
+    console.log("Received token:", token);
+    const { userId } = req.params;
+
     // Find the user's cart
     const cart = await Cart.findOne({ userId }).populate("items.item");
     if (!cart) {
@@ -88,7 +127,7 @@ async function viewTotalBill(req, res) {
     const itemsWithTotalPrice = cart.items.map((item) => {
       const product = item.item;
       const totalPrice = product.price * item.quantity;
-      const tax = taxCalculator.calculateProductTax(product.price);
+      const tax = taxCalculator.calculateProductTax(product.price); // Tax calculation added
       return {
         product: {
           _id: product._id,
