@@ -3,7 +3,7 @@ const Cart = require("../models/cart");
 const Product = require("../models/product");
 const taxCalculator = require("../utils/taxCalculator");
 
-const JWT_SECRET_KEY = "A9#2klz$aW1XnF%qS3p@tJYdfK&8cBz"; // Replace with your secret key
+const JWT_SECRET_KEY = "A9#2klz$aW1XnF%qS3p@tJYdfK&8cBz";
 
 // Add a product to the cart
 async function addToCart(req, res) {
